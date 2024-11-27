@@ -1,4 +1,9 @@
+using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+using nba_stats_api.Models;
+
 var builder = WebApplication.CreateBuilder(args);
+Env.Load();
 
 // Add services to the container.
 
@@ -13,6 +18,29 @@ builder.Services.AddCors(options =>
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
+builder.Services.AddDbContext<NBAStatsDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpClient<IPlayerService, PlayerService>(); // Register HttpClient
+builder.Services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+
+builder.Services.AddHttpClient<ITeamService, TeamService>(); // Register HttpClient
+builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
+
+builder.Services.AddHttpClient<IGameService, GameService>(); // Register HttpClient
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+
+builder.Services.AddHttpClient<IPlayerStatService, PlayerStatService>(); // Register HttpClient
+builder.Services.AddScoped<IPlayerStatService, PlayerStatService>();
+builder.Services.AddScoped<IPlayerStatRepository, PlayerStatRepository>();
+
+builder.Services.AddHttpClient<ITeamStatService, TeamStatService>(); // Register HttpClient
+builder.Services.AddScoped<ITeamStatService, TeamStatService>();
+builder.Services.AddScoped<ITeamStatRepository, TeamStatRepository>();
+
+builder.Configuration.AddUserSecrets<Program>();
 
 var app = builder.Build();
 
