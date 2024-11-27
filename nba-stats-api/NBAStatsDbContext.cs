@@ -37,7 +37,7 @@ namespace nba_stats_api.Models
                 .Property(ts => ts.TeamId)
                 .ValueGeneratedNever(); // Disable identity generation for PlayerId
             modelBuilder.Entity<TeamStat>()
-                .HasKey(ts => new { ts.TeamId, ts.PerMode }); // Composite key
+                .HasKey(ts => new { ts.TeamId, ts.PerMode, ts.Season }); // Composite key
 
         }
     }

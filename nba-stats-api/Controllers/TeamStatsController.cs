@@ -18,7 +18,7 @@ public class TeamStatsController : ControllerBase
     {
         try
         {
-            foreach (var perMode in new[] { "Totals", "PerGame", "MinutesPer", "Per48", "Per40", "Per36", "PerMinute", "PerPossession", "PerPlay", "Per100Possessions", "Per100Plays" })
+            foreach (var perMode in new[] { "Totals", "PerGame", "Per36", "PerPossession", "Per100Possessions" })
             {
                 await _teamStatService.SeedStats(perMode);
             }
@@ -30,6 +30,13 @@ public class TeamStatsController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetTeamStatsAsync()
+    {
+        var teams = await _teamStatService.GetTeamStatsAsync();
+        return Ok(teams);
     }
 
 }

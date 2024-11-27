@@ -1,10 +1,13 @@
 ﻿
+using Azure;
+using Microsoft.VisualBasic;
 using System.Text.Json;
 
 public class TeamStatService : ITeamStatService
 {
         private readonly ITeamStatRepository _teamStatRepository;
         private readonly HttpClient _httpClient;
+        private List<string> _seasons;
 
         public TeamStatService(ITeamStatRepository teamStatRepository, HttpClient httpClient)
         {
@@ -24,39 +27,65 @@ public class TeamStatService : ITeamStatService
             throw new NotImplementedException();
         }
 
-        public Task<List<TeamStat>> GetTeamStatsAsync()
+        public async Task<List<TeamStat>> GetTeamStatsAsync()
         {
-            throw new NotImplementedException();
+            var seasonResponse = await _httpClient.GetAsync($"/seasons");
+            //seasonResponse.EnsureSuccessStatusCode();
+            var responseContent = await seasonResponse.Content.ReadAsStringAsync();
+            Console.WriteLine(responseContent);
+            return await _teamStatRepository.GetTeamStatAsync();
+        }
+
+        public async Task<List<string>> GetSeasonsAsync()
+        {
+            if (_seasons != null) // Use cached seasons if available
+            {
+                return _seasons;
+            }
+
+            var response = await _httpClient.GetAsync("/seasons");
+            //response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync();
+            _seasons = JsonSerializer.Deserialize<List<string>>(responseContent);
+
+            return _seasons;
         }
 
         public async Task<List<TeamStat>> SeedStats(string permode)
         {
             try
             {
-                // Fetch data from the API
-                var response = await _httpClient.GetAsync($"/stats/teams?PerMode={permode}");
-                response.EnsureSuccessStatusCode();
+                //Fetch NBA seasons from 2010 - current
+                var seasons = await GetSeasonsAsync();
 
-                var responseData = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"Raw API Response for PerMode {permode}: {responseData}");
-                using var document = JsonDocument.Parse(responseData);
-                var statsJson = document.RootElement.GetProperty("LeagueDashTeamStats");
-
-                // Deserialize the LeagueDashPlayerStats section into a list
-                var leagueDashTeamStats = JsonSerializer.Deserialize<List<TeamStat>>(statsJson.GetRawText(), new JsonSerializerOptions
+                foreach (var season in seasons)
                 {
-                    PropertyNameCaseInsensitive = true
-                });
+                    await Task.Delay(500);
+                    // Fetch data from the API
+                    var response = await _httpClient.GetAsync($"/stats/teams?PerMode={permode}&Season={season}");
+                    //response.EnsureSuccessStatusCode();
 
-                // Map and upsert teams
-                foreach (var statResponse in leagueDashTeamStats)
-                {
-                    Console.WriteLine($"Deserialized TeamStat - TeamId: {statResponse.TeamId}, PerMode: {permode}, Points: {statResponse.Points}");
+                    var responseData = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Raw API Response for PerMode {permode}: {responseData}");
+                    using var document = JsonDocument.Parse(responseData);
+                    var statsJson = document.RootElement.GetProperty("LeagueDashTeamStats");
 
-                    var stat = new TeamStat
+                    // Deserialize the LeagueDashPlayerStats section into a list
+                    var leagueDashTeamStats = JsonSerializer.Deserialize<List<TeamStat>>(statsJson.GetRawText(), new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    // Map and upsert teams
+                    foreach (var statResponse in leagueDashTeamStats)
+                    {
+                        Console.WriteLine($"Deserialized TeamStat - TeamId: {statResponse.TeamId}, PerMode: {permode}, Points: {statResponse.Points}");
+
+                        var stat = new TeamStat
                         {
                             TeamId = statResponse.TeamId,
                             TeamName = statResponse.TeamName,
+                            Season = season,
                             PerMode = permode,
                             GamesPlayed = statResponse.GamesPlayed,
                             Points = statResponse.Points,
@@ -82,8 +111,9 @@ public class TeamStatService : ITeamStatService
                         };
 
 
-                    await _teamStatRepository.UpsertTeamStatAsync(stat);
+                        await _teamStatRepository.UpsertTeamStatAsync(stat);
                 }
+            }
 
                 // Return all teams from the database
                 return await _teamStatRepository.GetTeamStatAsync();
@@ -93,7 +123,7 @@ public class TeamStatService : ITeamStatService
                 Console.WriteLine($"Error occurred while seeding teams: {ex.Message}");
                 throw;
             }
-    }
+        }
 
         public Task<bool> UpdateTeamStatAsync(TeamStat stat)
         {

@@ -70,7 +70,7 @@ public class TeamStatRepository : ITeamStatRepository
 
     public async Task UpsertTeamStatAsync(TeamStat stat)
     {
-        var existingStat = await _dbContext.TeamStats.FirstOrDefaultAsync(ts => ts.TeamId == stat.TeamId && ts.PerMode == stat.PerMode);
+        var existingStat = await _dbContext.TeamStats.FirstOrDefaultAsync(ts => ts.TeamId == stat.TeamId && ts.PerMode == stat.PerMode && ts.Season == stat.Season);
 
         if (existingStat == null)
         {
