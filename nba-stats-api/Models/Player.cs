@@ -38,5 +38,18 @@ public class Player
     public bool? IsNBAPlayer { get; set; }     
     public bool? IsGreatest75 { get; set; }
 
+    // Awards
+    public int allDefensive {  get; set; }
+    public int dpoy {  get; set; }
+    public int allNBA {  get; set; }
+    public int allStar {  get; set; }
+    public int mvp {  get; set; }
+    public int fmvp { get; set; }
+    public int champion { get; set; }
+    public int olympicBronze { get; set; }
+    public int olympicSilver { get; set; }
+    public int olympicGold { get; set; }
+
+
     public DateTime UpdatedAt { get; set; }
 }

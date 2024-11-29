@@ -1,4 +1,8 @@
-﻿using nba_stats_api.API;
+﻿using Azure;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using nba_stats_api.API;
+using System.Linq.Expressions;
+using System.Numerics;
 using System.Text.Json;
 
 public class PlayerService : IPlayerService
@@ -28,10 +32,10 @@ public class PlayerService : IPlayerService
             response.EnsureSuccessStatusCode();
 
             var responseData = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Raw JSON Response: {responseData}");
+            //Console.WriteLine($"Raw JSON Response: {responseData}");
             // Deserialize into the PlayerApiResponse class
             var playerApiResponse = JsonSerializer.Deserialize<PlayerApiResponse>(responseData);
-            Console.WriteLine($"Deserialized Response: {JsonSerializer.Serialize(playerApiResponse)}");
+            //Console.WriteLine($"Deserialized Response: {JsonSerializer.Serialize(playerApiResponse)}");
 
             if (playerApiResponse == null || playerApiResponse.CommonPlayerInfo.Count == 0)
             {
@@ -72,11 +76,41 @@ public class PlayerService : IPlayerService
                 IsGreatest75 = commonPlayerInfo.IsGreatest75 == "Y",
                 UpdatedAt = DateTime.UtcNow
             };
-                
-                await Task.Delay(500);
-                await _playerRepository.UpsertPlayerAsync(player);
 
-                return player;
+            var awards = await GetPlayerAwardsAsync(playerId);
+            var awardCounts = new Dictionary<string, int>();
+
+            foreach (var award in awards)
+            {
+                if (awardCounts.ContainsKey(award.DESCRIPTION))
+                {
+                    awardCounts[award.DESCRIPTION]++;
+                }
+                else
+                {
+                    awardCounts[award.DESCRIPTION] = 1;
+                }
+
+                Console.WriteLine($"Description: {award.DESCRIPTION}, Season: {award.SEASON}, Team: {award.TEAM}");
+                
+            }
+
+            player.allDefensive = awardCounts.GetValueOrDefault("All-Defensive Team", 0);
+            player.dpoy = awardCounts.GetValueOrDefault("NBA Defensive Player of the Year", 0);
+            player.allNBA = awardCounts.GetValueOrDefault("All-NBA", 0);
+            player.allStar = awardCounts.GetValueOrDefault("NBA All-Star", 0);
+            player.mvp = awardCounts.GetValueOrDefault("NBA Sporting News Most Valuable Player of the Year", 0);
+            player.fmvp = awardCounts.GetValueOrDefault("NBA Finals Most Valuable Player", 0);
+            player.champion = awardCounts.GetValueOrDefault("NBA Champion", 0);
+            player.olympicBronze = awardCounts.GetValueOrDefault("Olympic Bronze Medal", 0);
+            player.olympicSilver = awardCounts.GetValueOrDefault("Olympic Silver Medal", 0);
+            player.olympicGold = awardCounts.GetValueOrDefault("Olympic Gold Medal", 0);
+
+
+            await Task.Delay(500);
+            await _playerRepository.UpsertPlayerAsync(player);
+
+            return player;
         }
         catch (Exception ex)
         {
@@ -125,6 +159,18 @@ public class PlayerService : IPlayerService
     {
         await _playerRepository.AddPlayerAsync(player);
     }
+
+    public async Task<List<AwardResponse>> GetPlayerAwardsAsync(int playerId)
+    {
+        var response = await _httpClient.GetAsync($"/player-awards?PlayerId={playerId}");
+        var responseData = await response.Content.ReadAsStringAsync();
+
+        // Deserialize JSON into a list of Award objects
+        var awards = JsonSerializer.Deserialize<List<AwardResponse>>(responseData);
+
+        return awards ?? new List<AwardResponse>(); // Return an empty list if null
+    }
+
 }
 
 

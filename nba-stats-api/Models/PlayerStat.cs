@@ -14,6 +14,7 @@ public class PlayerStat
     [JsonPropertyName("TEAM_ID")]
     public int? TeamId { get; set; }
 
+    public string Season { get; set; }
     public string SeasonType { get; set; } = "Regular Season"; // Example: 'Regular Season', 'Playoffs'
     public string PerMode { get; set; } // Example: 'PerGame', 'Totals'
 

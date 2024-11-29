@@ -7,7 +7,7 @@ public class TeamStatService : ITeamStatService
 {
         private readonly ITeamStatRepository _teamStatRepository;
         private readonly HttpClient _httpClient;
-        private List<string> _seasons;
+        private List<string>? _seasons;
 
         public TeamStatService(ITeamStatRepository teamStatRepository, HttpClient httpClient)
         {

@@ -16,21 +16,13 @@ public class PlayerStatsController : ControllerBase
     {
         try
         {
-            var statsTotalsSeeded = await _playerStatService.SeedStats("Totals");
-            var statsPerGameSeeded = await _playerStatService.SeedStats("PerGame");
-            var statsMinutesPerSeeded = await _playerStatService.SeedStats("MinutesPer");
-            var statsPer48Seeded = await _playerStatService.SeedStats("Per48");
-            var statsPer40Seeded = await _playerStatService.SeedStats("Per40");
-            var statsPer36Seeded = await _playerStatService.SeedStats("Per36");
-            var statsPerMinuteSeeded = await _playerStatService.SeedStats("PerMinute");
-            var statsPerPossessionSeeded = await _playerStatService.SeedStats("PerPossession");
-            var statsPerPlaySeeded = await _playerStatService.SeedStats("PerPlay");
-            var statsPer100PossessionsSeeded = await _playerStatService.SeedStats("Per100Possessions");
-            var statsPer100PlaysSeeded = await _playerStatService.SeedStats("Per100Plays");
+            foreach (var perMode in new[] { "Totals", "PerGame", "Per36", "PerPossession", "Per100Possessions" })
+            {
+                await _playerStatService.SeedStats(perMode);
+            }
 
+            return Ok("Team Stats Seeded");
 
-            return Ok("Player Stats Seeded");
-            
         }
         catch (Exception ex)
         {

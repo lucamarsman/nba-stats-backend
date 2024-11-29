@@ -66,5 +66,21 @@ public class PlayerController : ControllerBase
             return BadRequest(new { error = ex.Message });
         }
     }
+
+    [HttpGet("{playerId}/details")]
+    public async Task<IActionResult> GetPlayerAwardsAsync(int playerId)
+    {
+        var playerAwards = await _playerService.GetPlayerAwardsAsync(playerId);
+
+        if (playerAwards == null || !playerAwards.Any())
+        {
+            return NotFound($"No awards found for player with ID {playerId}.");
+        }
+
+        return Ok(playerAwards);
+    }
+
+
+
 }
 

@@ -1,4 +1,5 @@
 ﻿using nba_stats_api.Models;
+using System.Text.Json;
 
 public interface IPlayerService
 {
@@ -7,5 +8,6 @@ public interface IPlayerService
     Task<bool> UpdatePlayerAsync(Player player);           // Update an existing player
     Task AddPlayerAsync(Player player);                    // Add a new player
     Task<List<Player>> SeedPlayers();              // Seed player table via team names
+    Task<List<AwardResponse>> GetPlayerAwardsAsync(int playerId);
 }
 

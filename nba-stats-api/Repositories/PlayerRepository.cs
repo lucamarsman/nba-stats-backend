@@ -54,6 +54,16 @@ public class PlayerRepository : IPlayerRepository
         existingPlayer.IsActive = player.IsActive;
         existingPlayer.IsNBAPlayer = player.IsNBAPlayer;
         existingPlayer.IsGreatest75 = player.IsGreatest75;
+        existingPlayer.allDefensive = player.allDefensive;
+        existingPlayer.dpoy = player.dpoy;
+        existingPlayer.allNBA = player.allNBA;
+        existingPlayer.allStar = player.allStar;
+        existingPlayer.mvp = player.mvp;
+        existingPlayer.fmvp = player.fmvp;
+        existingPlayer.champion = player.champion;
+        existingPlayer.olympicBronze = player.olympicBronze;
+        existingPlayer.olympicSilver = player.olympicSilver;
+        existingPlayer.olympicGold = player.olympicGold;
         existingPlayer.UpdatedAt = DateTime.UtcNow;
 
         _dbContext.Players.Update(existingPlayer);
@@ -108,6 +118,16 @@ public class PlayerRepository : IPlayerRepository
             existingPlayer.IsActive = player.IsActive;
             existingPlayer.IsNBAPlayer = player.IsNBAPlayer;
             existingPlayer.IsGreatest75 = player.IsGreatest75;
+            existingPlayer.allDefensive = player.allDefensive;
+            existingPlayer.dpoy = player.dpoy;
+            existingPlayer.allNBA = player.allNBA;
+            existingPlayer.allStar = player.allStar;
+            existingPlayer.mvp = player.mvp;
+            existingPlayer.fmvp = player.fmvp;
+            existingPlayer.champion = player.champion;
+            existingPlayer.olympicBronze = player.olympicBronze;
+            existingPlayer.olympicSilver = player.olympicSilver;
+            existingPlayer.olympicGold = player.olympicGold;
             existingPlayer.UpdatedAt = DateTime.UtcNow;
 
             _dbContext.Players.Update(existingPlayer);

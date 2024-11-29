@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using nba_stats_api.Models;
 
@@ -11,9 +12,11 @@ using nba_stats_api.Models;
 namespace nba_stats_api.Migrations
 {
     [DbContext(typeof(NBAStatsDbContext))]
-    partial class NBAStatsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241129195438_AddSeasonFieldToPlayerStatTable")]
+    partial class AddSeasonFieldToPlayerStatTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -179,9 +182,6 @@ namespace nba_stats_api.Migrations
                     b.Property<string>("PerMode")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Season")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<float>("Assists")
                         .HasColumnType("real")
                         .HasAnnotation("Relational:JsonPropertyName", "AST");
@@ -247,6 +247,10 @@ namespace nba_stats_api.Migrations
                         .HasColumnType("real")
                         .HasAnnotation("Relational:JsonPropertyName", "REB");
 
+                    b.Property<string>("Season")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SeasonType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -278,7 +282,7 @@ namespace nba_stats_api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PlayerId", "PerMode", "Season");
+                    b.HasKey("PlayerId", "PerMode");
 
                     b.ToTable("PlayerStats");
                 });

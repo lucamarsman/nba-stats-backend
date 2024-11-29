@@ -71,7 +71,7 @@ public class PlayerStatRepository : IPlayerStatRepository
 
     public async Task UpsertPlayerStatAsync(PlayerStat stat)
     {
-        var existingStat = await _dbContext.PlayerStats.FirstOrDefaultAsync(ps => ps.PlayerId == stat.PlayerId && ps.PerMode == stat.PerMode);
+        var existingStat = await _dbContext.PlayerStats.FirstOrDefaultAsync(ps => ps.PlayerId == stat.PlayerId && ps.PerMode == stat.PerMode && ps.Season == stat.Season);
 
         if (existingStat == null)
         {
