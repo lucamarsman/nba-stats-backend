@@ -65,6 +65,7 @@ using nba_stats_api.Models;
             {
                 // Update existing game
                 existingGame.GameId = game.GameId;
+                existingGame.Season = game.Season;
                 existingGame.HomeTeamId = game.HomeTeamId;
                 existingGame.AwayTeamId = game.AwayTeamId;
                 existingGame.GameDate = game.GameDate;

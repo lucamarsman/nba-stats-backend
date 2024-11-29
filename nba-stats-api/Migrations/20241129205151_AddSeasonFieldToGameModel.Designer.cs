@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using nba_stats_api.Models;
 
@@ -11,9 +12,11 @@ using nba_stats_api.Models;
 namespace nba_stats_api.Migrations
 {
     [DbContext(typeof(NBAStatsDbContext))]
-    partial class NBAStatsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241129205151_AddSeasonFieldToGameModel")]
+    partial class AddSeasonFieldToGameModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
