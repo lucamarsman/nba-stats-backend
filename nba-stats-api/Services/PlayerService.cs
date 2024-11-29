@@ -72,13 +72,11 @@ public class PlayerService : IPlayerService
                 IsGreatest75 = commonPlayerInfo.IsGreatest75 == "Y",
                 UpdatedAt = DateTime.UtcNow
             };
-
-            if(commonPlayerInfo.RosterStatus == "Active")
-            {
+                
+                await Task.Delay(500);
                 await _playerRepository.UpsertPlayerAsync(player);
-            }
 
-            return player;
+                return player;
         }
         catch (Exception ex)
         {
@@ -92,15 +90,17 @@ public class PlayerService : IPlayerService
     {
 
         var response = await _httpClient.GetAsync($"/players");
-        response.EnsureSuccessStatusCode();
+        //response.EnsureSuccessStatusCode();
 
         var responseData = await response.Content.ReadAsStringAsync();
         using var document = JsonDocument.Parse(responseData);
         var root = document.RootElement;
 
+        Console.WriteLine(root.ToString() );
+
         // Extract only the player IDs
         var playerIds = root.EnumerateArray()
-                            .Select(player => player.GetProperty("id").GetInt32())
+                            .Select(player => player.GetProperty("PERSON_ID").GetInt32())
                             .ToList();
 
         foreach (var id in playerIds)
