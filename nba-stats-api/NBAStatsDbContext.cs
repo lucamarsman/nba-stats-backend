@@ -12,6 +12,7 @@ namespace nba_stats_api.Models
         public DbSet<Game> Games { get; set; }
         public DbSet<PlayerStat> PlayerStats { get; set; }
         public DbSet<TeamStat> TeamStats { get; set; }
+        public DbSet<Boxscore> Boxscores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
