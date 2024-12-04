@@ -3,10 +3,10 @@
 public class Boxscore
 {
     [JsonPropertyName("GAME_ID")]
-    public int gameId { get; set; }
+    public int GameId { get; set; }
 
     [JsonPropertyName("PLAYER_ID")]
-    public int playerId { get; set; }
+    public int PlayerId { get; set; }
 
     [JsonPropertyName("PLAYER_NAME")]
     public string playerName { get; set; }

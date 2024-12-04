@@ -27,20 +27,20 @@ public class BoxscoreRepository : IBoxscoreRepository
 
     public async Task<Boxscore> GetBoxscoreByIdAsync(int gameId)
     {
-        return await _dbContext.Boxscores.FirstOrDefaultAsync(bs => bs.gameId == gameId);
+        return await _dbContext.Boxscores.FirstOrDefaultAsync(bs => bs.GameId == gameId);
     }
 
     public async Task<bool> UpdateBoxscoreAsync(Boxscore boxscore)
     {
-        var existingBoxscore = await _dbContext.Boxscores.FindAsync(boxscore.gameId);
+        var existingBoxscore = await _dbContext.Boxscores.FindAsync(boxscore.GameId);
         if (existingBoxscore == null)
         {
             return false;
         }
 
         // Update existing game
-        existingBoxscore.gameId = boxscore.gameId;
-        existingBoxscore.playerId = boxscore.playerId;
+        existingBoxscore.GameId = boxscore.GameId;
+        existingBoxscore.PlayerId = boxscore.PlayerId;
         existingBoxscore.playerName = boxscore.playerName;
         existingBoxscore.gameComment = boxscore.gameComment;
         existingBoxscore.position = boxscore.position;
@@ -68,7 +68,7 @@ public class BoxscoreRepository : IBoxscoreRepository
 
     public async Task UpsertBoxscoreAsync(Boxscore boxscore)
     {
-        var existingBoxscore = await _dbContext.Boxscores.FindAsync(boxscore.gameId);
+        var existingBoxscore = await _dbContext.Boxscores.FirstOrDefaultAsync(bs => bs.GameId == boxscore.GameId && bs.PlayerId == boxscore.PlayerId);
 
         if (existingBoxscore == null)
         {

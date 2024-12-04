@@ -40,6 +40,12 @@ namespace nba_stats_api.Models
             modelBuilder.Entity<TeamStat>()
                 .HasKey(ts => new { ts.TeamId, ts.PerMode, ts.Season }); // Composite key
 
+            modelBuilder.Entity<Boxscore>()
+                .Property(bs => bs.GameId)
+                .ValueGeneratedNever();
+            modelBuilder.Entity<Boxscore>()
+                .HasKey(bs => new { bs.GameId, bs.PlayerId }); // Composite key
+
         }
     }
 }
