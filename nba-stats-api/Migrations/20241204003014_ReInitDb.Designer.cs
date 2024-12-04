@@ -12,8 +12,8 @@ using nba_stats_api.Models;
 namespace nba_stats_api.Migrations
 {
     [DbContext(typeof(NBAStatsDbContext))]
-    [Migration("20241204001630_AddBoxscoreModel")]
-    partial class AddBoxscoreModel
+    [Migration("20241204003014_ReInitDb")]
+    partial class ReInitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,8 +27,8 @@ namespace nba_stats_api.Migrations
 
             modelBuilder.Entity("Boxscore", b =>
                 {
-                    b.Property<int>("GameId")
-                        .HasColumnType("int")
+                    b.Property<string>("GameId")
+                        .HasColumnType("nvarchar(450)")
                         .HasAnnotation("Relational:JsonPropertyName", "GAME_ID");
 
                     b.Property<int>("PlayerId")

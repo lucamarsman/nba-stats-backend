@@ -27,7 +27,7 @@ public class BoxscoreRepository : IBoxscoreRepository
 
     public async Task<Boxscore> GetBoxscoreByIdAsync(int gameId)
     {
-        return await _dbContext.Boxscores.FirstOrDefaultAsync(bs => bs.GameId == gameId);
+        return await _dbContext.Boxscores.FirstOrDefaultAsync(bs => bs.GameId == gameId.ToString());
     }
 
     public async Task<bool> UpdateBoxscoreAsync(Boxscore boxscore)

@@ -58,6 +58,8 @@ public class BoxscoreService : IBoxscoreService
                 var responseData = await response.Content.ReadAsStringAsync();
                 using var document = JsonDocument.Parse(responseData);
                 var statsJson = document.RootElement.GetProperty("PlayerStats");
+                Console.WriteLine($"Raw JSON: {statsJson.GetRawText()}");
+
 
                 var playerStats = JsonSerializer.Deserialize<List<Boxscore>>(statsJson.GetRawText(), new JsonSerializerOptions
                 {

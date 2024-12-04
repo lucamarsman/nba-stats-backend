@@ -12,8 +12,8 @@ using nba_stats_api.Models;
 namespace nba_stats_api.Migrations
 {
     [DbContext(typeof(NBAStatsDbContext))]
-    [Migration("20241127190310_AddSeasonColumnTeamStats")]
-    partial class AddSeasonColumnTeamStats
+    [Migration("20241204004132_NullableBoxscoreFields")]
+    partial class NullableBoxscoreFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,93 @@ namespace nba_stats_api.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Boxscore", b =>
+                {
+                    b.Property<string>("GameId")
+                        .HasColumnType("nvarchar(450)")
+                        .HasAnnotation("Relational:JsonPropertyName", "GAME_ID");
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "PLAYER_ID");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("assists")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "AST");
+
+                    b.Property<int?>("blocks")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "BLK");
+
+                    b.Property<double?>("fieldGoalPercentage")
+                        .HasColumnType("float")
+                        .HasAnnotation("Relational:JsonPropertyName", "FG_PCT");
+
+                    b.Property<int?>("fieldGoalsAttempted")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "FGA");
+
+                    b.Property<int?>("fieldGoalsMade")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "FGM");
+
+                    b.Property<string>("gameComment")
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "COMMENT");
+
+                    b.Property<string>("minutes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "MIN");
+
+                    b.Property<string>("playerName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "PLAYER_NAME");
+
+                    b.Property<double?>("plusMinus")
+                        .HasColumnType("float")
+                        .HasAnnotation("Relational:JsonPropertyName", "PLUS_MINUS");
+
+                    b.Property<double?>("points")
+                        .HasColumnType("float")
+                        .HasAnnotation("Relational:JsonPropertyName", "PTS");
+
+                    b.Property<string>("position")
+                        .HasColumnType("nvarchar(max)")
+                        .HasAnnotation("Relational:JsonPropertyName", "START_POSITION");
+
+                    b.Property<int?>("rebounds")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "REB");
+
+                    b.Property<int?>("steals")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "STL");
+
+                    b.Property<double?>("threePointerPercentage")
+                        .HasColumnType("float")
+                        .HasAnnotation("Relational:JsonPropertyName", "FG3_PCT");
+
+                    b.Property<int?>("threePointersAttempted")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "FG3A");
+
+                    b.Property<int?>("threePointersMade")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "FG3M");
+
+                    b.Property<int?>("turnovers")
+                        .HasColumnType("int")
+                        .HasAnnotation("Relational:JsonPropertyName", "TO");
+
+                    b.HasKey("GameId", "PlayerId");
+
+                    b.ToTable("Boxscores");
+                });
 
             modelBuilder.Entity("Game", b =>
                 {
@@ -44,6 +131,10 @@ namespace nba_stats_api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("MatchUp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Season")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -138,6 +229,36 @@ namespace nba_stats_api.Migrations
                     b.Property<string>("Weight")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("allDefensive")
+                        .HasColumnType("int");
+
+                    b.Property<int>("allNBA")
+                        .HasColumnType("int");
+
+                    b.Property<int>("allStar")
+                        .HasColumnType("int");
+
+                    b.Property<int>("champion")
+                        .HasColumnType("int");
+
+                    b.Property<int>("dpoy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("fmvp")
+                        .HasColumnType("int");
+
+                    b.Property<int>("mvp")
+                        .HasColumnType("int");
+
+                    b.Property<int>("olympicBronze")
+                        .HasColumnType("int");
+
+                    b.Property<int>("olympicGold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("olympicSilver")
+                        .HasColumnType("int");
+
                     b.HasKey("PlayerId");
 
                     b.ToTable("Players");
@@ -150,6 +271,9 @@ namespace nba_stats_api.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "PLAYER_ID");
 
                     b.Property<string>("PerMode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Season")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float>("Assists")
@@ -248,7 +372,7 @@ namespace nba_stats_api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PlayerId", "PerMode");
+                    b.HasKey("PlayerId", "PerMode", "Season");
 
                     b.ToTable("PlayerStats");
                 });
@@ -260,6 +384,9 @@ namespace nba_stats_api.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "TEAM_ID");
 
                     b.Property<string>("PerMode")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Season")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float>("Assists")
@@ -322,10 +449,6 @@ namespace nba_stats_api.Migrations
                         .HasColumnType("real")
                         .HasAnnotation("Relational:JsonPropertyName", "REB");
 
-                    b.Property<string>("Season")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("SeasonType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -358,7 +481,7 @@ namespace nba_stats_api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("TeamId", "PerMode");
+                    b.HasKey("TeamId", "PerMode", "Season");
 
                     b.ToTable("TeamStats");
                 });

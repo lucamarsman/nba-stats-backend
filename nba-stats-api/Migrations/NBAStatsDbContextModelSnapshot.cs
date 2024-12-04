@@ -24,8 +24,8 @@ namespace nba_stats_api.Migrations
 
             modelBuilder.Entity("Boxscore", b =>
                 {
-                    b.Property<int>("GameId")
-                        .HasColumnType("int")
+                    b.Property<string>("GameId")
+                        .HasColumnType("nvarchar(450)")
                         .HasAnnotation("Relational:JsonPropertyName", "GAME_ID");
 
                     b.Property<int>("PlayerId")
@@ -35,33 +35,31 @@ namespace nba_stats_api.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("assists")
+                    b.Property<int?>("assists")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "AST");
 
-                    b.Property<int>("blocks")
+                    b.Property<int?>("blocks")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "BLK");
 
-                    b.Property<double>("fieldGoalPercentage")
+                    b.Property<double?>("fieldGoalPercentage")
                         .HasColumnType("float")
                         .HasAnnotation("Relational:JsonPropertyName", "FG_PCT");
 
-                    b.Property<int>("fieldGoalsAttempted")
+                    b.Property<int?>("fieldGoalsAttempted")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "FGA");
 
-                    b.Property<int>("fieldGoalsMade")
+                    b.Property<int?>("fieldGoalsMade")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "FGM");
 
                     b.Property<string>("gameComment")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasAnnotation("Relational:JsonPropertyName", "COMMENT");
 
                     b.Property<string>("minutes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasAnnotation("Relational:JsonPropertyName", "MIN");
 
@@ -70,40 +68,39 @@ namespace nba_stats_api.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasAnnotation("Relational:JsonPropertyName", "PLAYER_NAME");
 
-                    b.Property<int>("plusMinus")
-                        .HasColumnType("int")
+                    b.Property<double?>("plusMinus")
+                        .HasColumnType("float")
                         .HasAnnotation("Relational:JsonPropertyName", "PLUS_MINUS");
 
-                    b.Property<double>("points")
+                    b.Property<double?>("points")
                         .HasColumnType("float")
                         .HasAnnotation("Relational:JsonPropertyName", "PTS");
 
                     b.Property<string>("position")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)")
                         .HasAnnotation("Relational:JsonPropertyName", "START_POSITION");
 
-                    b.Property<int>("rebounds")
+                    b.Property<int?>("rebounds")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "REB");
 
-                    b.Property<int>("steals")
+                    b.Property<int?>("steals")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "STL");
 
-                    b.Property<double>("threePointerPercentage")
+                    b.Property<double?>("threePointerPercentage")
                         .HasColumnType("float")
                         .HasAnnotation("Relational:JsonPropertyName", "FG3_PCT");
 
-                    b.Property<int>("threePointersAttempted")
+                    b.Property<int?>("threePointersAttempted")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "FG3A");
 
-                    b.Property<int>("threePointersMade")
+                    b.Property<int?>("threePointersMade")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "FG3M");
 
-                    b.Property<int>("turnovers")
+                    b.Property<int?>("turnovers")
                         .HasColumnType("int")
                         .HasAnnotation("Relational:JsonPropertyName", "TO");
 

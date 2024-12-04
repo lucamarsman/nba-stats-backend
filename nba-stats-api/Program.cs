@@ -40,6 +40,10 @@ builder.Services.AddHttpClient<ITeamStatService, TeamStatService>(); // Register
 builder.Services.AddScoped<ITeamStatService, TeamStatService>();
 builder.Services.AddScoped<ITeamStatRepository, TeamStatRepository>();
 
+builder.Services.AddHttpClient<IBoxscoreService, BoxscoreService>(); // Register HttpClient
+builder.Services.AddScoped<IBoxscoreService, BoxscoreService>();
+builder.Services.AddScoped<IBoxscoreRepository, BoxscoreRepository>();
+
 builder.Configuration.AddUserSecrets<Program>();
 
 var app = builder.Build();
