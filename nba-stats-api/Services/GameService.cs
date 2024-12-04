@@ -35,30 +35,26 @@ public class GameService : IGameService
     {
         try
         {
-            //Fetch NBA seasons from 2010 - current
             var seasons = await GetSeasonsAsync();
             var validNbaTeamAbbreviations = new HashSet<string>
-            {
-                "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GSW",
-                "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK",
-                "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"
-            };
+        {
+            "ATL", "BOS", "BKN", "CHA", "CHI", "CLE", "DAL", "DEN", "DET", "GSW",
+            "HOU", "IND", "LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK",
+            "OKC", "ORL", "PHI", "PHX", "POR", "SAC", "SAS", "TOR", "UTA", "WAS"
+        };
 
-            // For each season since 2010, get and upsert every game into the db
             foreach (var season in seasons)
             {
-                // Fetch games from the season
                 var response = await _httpClient.GetAsync($"/schedule?Season={season}");
                 response.EnsureSuccessStatusCode();
 
-                // Parse the response JSON
                 var responseData = await response.Content.ReadAsStringAsync();
-                var cleanedJson = responseData.Replace("NaN", "null"); // Replaces NaN property values because it was breaking the Json serialization process
+                var cleanedJson = responseData.Replace("NaN", "null");
                 var options = new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, // Case-insensitive matching
-                    AllowTrailingCommas = true,         // Handle JSON with trailing commas gracefully
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull // Ignore null values
+                    PropertyNameCaseInsensitive = true,
+                    AllowTrailingCommas = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
                 };
                 var gameResponses = JsonSerializer.Deserialize<List<ScheduleResponse>>(cleanedJson, options);
 
@@ -67,25 +63,34 @@ public class GameService : IGameService
                     throw new Exception("No games were retrieved from the API.");
                 }
 
-                // For each game in the specified season, get the team abbreviations from the matchup field and extract the team ids, upsert game details
                 foreach (var gameResponse in gameResponses)
                 {
-                    var matchUpParts = gameResponse.MatchUp.Split('@');
+                    var matchUpParts = gameResponse.MatchUp.Contains("@")
+                        ? gameResponse.MatchUp.Split('@')
+                        : gameResponse.MatchUp.Split("vs.");
+
                     if (matchUpParts.Length != 2)
                     {
                         Console.WriteLine($"Invalid MatchUp format: {gameResponse.MatchUp}");
-                        matchUpParts = gameResponse.MatchUp.Split("vs.");
                         continue;
                     }
 
-                    var homeTeamAbbreviation = matchUpParts[1].Trim();
                     var awayTeamAbbreviation = matchUpParts[0].Trim();
-                    var awayTeamId = await _teamRepository.GetTeamIdByAbbreviation(awayTeamAbbreviation);
+                    var homeTeamAbbreviation = matchUpParts[1].Trim();
 
-                    // This ignores preseason matchups between NBA teams and Euroleague teams
-                    if (!validNbaTeamAbbreviations.Contains(homeTeamAbbreviation) || !validNbaTeamAbbreviations.Contains(awayTeamAbbreviation))
+                    if (!validNbaTeamAbbreviations.Contains(homeTeamAbbreviation) ||
+                        !validNbaTeamAbbreviations.Contains(awayTeamAbbreviation))
                     {
                         Console.WriteLine($"Skipping game with non-NBA team: {gameResponse.MatchUp}");
+                        continue;
+                    }
+
+                    var awayTeamId = await _teamRepository.GetTeamIdByAbbreviation(awayTeamAbbreviation);
+                    var homeTeamId = await _teamRepository.GetTeamIdByAbbreviation(homeTeamAbbreviation);
+
+                    if (homeTeamId == null || awayTeamId == null)
+                    {
+                        Console.WriteLine($"Skipping game due to missing team IDs: {gameResponse.MatchUp}");
                         continue;
                     }
 
@@ -93,20 +98,18 @@ public class GameService : IGameService
                     {
                         GameId = gameResponse.GameId,
                         Season = season,
-                        HomeTeamId = gameResponse.HomeTeamId,
+                        HomeTeamId = homeTeamId,
                         AwayTeamId = awayTeamId,
                         GameDate = DateTime.Parse(gameResponse.GameDate),
                         GameStatus = "Final",
                         MatchUp = gameResponse.MatchUp,
                         UpdatedAt = DateTime.UtcNow
-
                     };
 
                     await _gameRepository.UpsertGameAsync(game);
                 }
             }
 
-            // Return all teams from the database
             return await _gameRepository.GetAllGamesAsync();
         }
         catch (Exception ex)
@@ -115,6 +118,7 @@ public class GameService : IGameService
             throw;
         }
     }
+
 
     public Task<bool> UpdateGameAsync(Game game)
     {
